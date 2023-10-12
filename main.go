@@ -14,33 +14,28 @@ var nombrelignealire = 8
 var positiondedepart = 0
 
 func main() {
-	// On choisis un mot au pif dans words.txt
-
-	fmt.Print("\033[H\033[2J")
+	// On choisit un mot au hasard dans words.txt
 	data, err := ioutil.ReadFile("words.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
 	words := strings.Split(string(data), "\n")
 
-	// On séléctionne un mot au hasard
-
+	// On sélectionne un mot au hasard
 	rand.Seed(time.Now().UnixNano())
 	word := words[rand.Intn(len(words))]
 
-	// On créer une variable pour le nombre de tentatives
-
+	// On crée une variable pour le nombre de tentatives
 	maxattempts := 10
 	attempts := maxattempts
 
-	print("Bienvenue dans le jeu du pendu", "\n")
+	fmt.Print("Bienvenue dans le jeu du pendu")
+	fmt.Print("\n")
 
 	// Créez un tableau pour suivre les lettres correctement devinées
-
 	lettresDevinees := make([]bool, len(word))
 
 	// Créez le mot partiel initial avec des "_"
-
 	motPartiel := make([]string, len(word))
 	for i := range motPartiel {
 		motPartiel[i] = "_"
@@ -49,12 +44,26 @@ func main() {
 	lettresEssayees := make(map[string]bool)
 
 	for attempts > 0 {
-		fmt.Printf("il vous reste %d tentatives\n", attempts)
+		fmt.Print("\033[H\033[2J") // Effacer l'écran
+		fmt.Printf("Il vous reste %d tentatives\n", attempts)
 
-		// Demander une lettre à l'utilisateur
+		// Affichez le hangman
+		hangman(positiondedepart)
 
+		// Affichez le mot à deviner
+		fmt.Print("Mot à deviner: ")
+		for i, lettre := range motPartiel {
+			if lettresDevinees[i] {
+				fmt.Print(lettre)
+			} else {
+				fmt.Print("_")
+			}
+		}
+		fmt.Print("\n")
+
+		// Demandez une lettre à l'utilisateur
 		var input string
-		println("Entrez une lettre : ")
+		fmt.Println("Entrez une lettre : ")
 		if input == word {
 		}
 		if lettresEssayees[input] {
@@ -66,29 +75,22 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-		// On met la lettre en minuscule
-
+		// Mettez la lettre en minuscule
 		input = strings.ToLower(input)
 
-		fmt.Print("\033[H\033[2J")
-
-		// Si la lettre est dans le mot, on affiche le mot avec les lettres trouvées
-
+		// Si la lettre est dans le mot, affichez le mot avec les lettres trouvées
 		lettreTrouvee := false
-
 		for i, lettre := range word {
 			if strings.ToLower(string(lettre)) == input {
 				lettreTrouvee = true
 				motPartiel[i] = string(lettre)
 				lettresDevinees[i] = true
-				hangman(positiondedepart)
 			}
 		}
 
 		lettresEssayees[input] = true
 
 		// Vérifiez si toutes les lettres ont été devinées
-
 		toutesLettresTrouvees := true
 		for _, trouvee := range lettresDevinees {
 			if !trouvee {
@@ -96,24 +98,44 @@ func main() {
 				break
 			}
 		}
-		fmt.Println("Mot à deviner :", strings.Join(motPartiel, " "))
 
 		if toutesLettresTrouvees {
+			fmt.Print("\033[H\033[2J") // Effacer l'écran
+			fmt.Print("Mot à deviner: ")
+			for i, lettre := range motPartiel {
+				if lettresDevinees[i] {
+					fmt.Print(lettre)
+				} else {
+					fmt.Print("_")
+				}
+			}
+			fmt.Print("\n")
 			fmt.Println("Bravo, vous avez trouvé le mot :", word)
 			break
 		}
 
-		// Si la lettre n'est pas dans le mot, on affiche un message d'erreur et on décrémente le nombre de tentatives
-
+		// Si la lettre n'est pas dans le mot, affichez un message d'erreur et décrémentez le nombre de tentatives
 		if !lettreTrouvee {
+			fmt.Print("\033[H\033[2J") // Effacer l'écran
+			fmt.Printf("Mot à deviner: ")
+			for i, lettre := range motPartiel {
+				if lettresDevinees[i] {
+					fmt.Print(lettre)
+				} else {
+					fmt.Print("_")
+				}
+			}
+			fmt.Print("\n")
 			fmt.Println("Lettre incorrecte :", input)
 			attempts--
-			hangman(positiondedepart)
 			positiondedepart += nombrelignealire
 		}
 	}
+
 	if attempts == 0 {
-		fmt.Println("Vous n'avez plus de tentatives, vous avez perdu !", "\n", "Le mot était :", word)
+		fmt.Print("\033[H\033[2J") // Effacer l'écran
+		fmt.Println("Vous n'avez plus de tentatives, vous avez perdu !")
+		fmt.Println("Le mot était :", word)
 	}
 }
 
@@ -136,13 +158,16 @@ func hangman(startPosition int) {
 		}
 	}
 
-	// Lire les 8 lignes suivantes
+	// Lisez les 8 lignes suivantes
 	for i := 0; i < nombrelignealire; i++ {
 		if scanner.Scan() {
 			ligne := scanner.Text()
 			fmt.Println(ligne)
-		} else if scanner.Err() != nil {
-			log.Fatal(scanner.Err())
+		} else if scanner.Err() !=
+			nil {
+			if scanner.Err() != nil {
+				log.Fatal(scanner.Err())
+			}
 		}
 	}
 }

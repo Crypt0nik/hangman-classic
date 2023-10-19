@@ -14,6 +14,7 @@ var nombrelignealire = 8
 var positiondedepart = 0
 
 func main() {
+
 	// On choisit un mot au hasard dans words.txt
 	data, err := ioutil.ReadFile("words.txt")
 	if err != nil {
@@ -29,9 +30,6 @@ func main() {
 	maxattempts := 10
 	attempts := maxattempts
 
-	fmt.Print("Bienvenue dans le jeu du pendu")
-	fmt.Print("\n")
-
 	// Créez un tableau pour suivre les lettres correctement devinées
 	lettresDevinees := make([]bool, len(word))
 
@@ -45,6 +43,7 @@ func main() {
 
 	for attempts > 0 {
 		fmt.Print("\033[H\033[2J") // Effacer l'écran
+		fmt.Println("Bienvenue dans le jeu du pendu !")
 		fmt.Printf("Il vous reste %d tentatives\n", attempts)
 
 		// Affichez le hangman
@@ -148,7 +147,6 @@ func hangman(startPosition int) {
 
 	// Créez un reader à partir du contenu du fichier
 	reader := strings.NewReader(string(content))
-
 	// scanner
 	scanner := bufio.NewScanner(reader)
 

@@ -6,14 +6,47 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var nombrelignealire = 8
 var positiondedepart = 0
 
 func main() {
+	fichier, err := os.Open("GROSNOOB.txt")
+	if err != nil {
+		fmt.Println("Erreur lors de l'ouverture du fichier :", err)
+		return
+	}
+	defer fichier.Close()
+
+	// Lisez le contenu du fichier
+	tnul, err := ioutil.ReadAll(fichier)
+	if err != nil {
+		fmt.Println("Erreur lors de la lecture du fichier :", err)
+		return
+	}
+
+	file, err := os.Open("BRAVO.txt")
+	if err != nil {
+		fmt.Println("Erreur lors de l'ouverture du fichier :", err)
+		return
+	}
+	defer file.Close()
+
+	// Lisez le contenu du fichier
+	content, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println("Erreur lors de la lecture du fichier :", err)
+		return
+	}
+
+	// Définit les couleurs
+	red := color.New(color.FgRed)
 
 	// On choisit un mot au hasard dans words.txt
 	data, err := ioutil.ReadFile("words.txt")
@@ -25,7 +58,7 @@ func main() {
 	// On sélectionne un mot au hasard
 	rand.Seed(time.Now().UnixNano())
 	word := words[rand.Intn(len(words))]
-
+	print(word)
 	// On crée une variable pour le nombre de tentatives
 	maxattempts := 10
 	attempts := maxattempts
@@ -43,14 +76,22 @@ func main() {
 
 	for attempts > 0 {
 		fmt.Print("\033[H\033[2J") // Effacer l'écran
-		fmt.Println("Bienvenue dans le jeu du pendu !")
+		fmt.Print("\n")
+		fmt.Print("\n")
+		red.Print(" ----------------------------------\n")
+		fmt.Println("  Bienvenue dans le jeu du pendu !")
+		red.Print(" ----------------------------------\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
 		fmt.Printf("Il vous reste %d tentatives\n", attempts)
+		fmt.Print("\n")
+		fmt.Print("\n")
 
 		// Affichez le hangman
 		hangman(positiondedepart)
 
 		// Affichez le mot à deviner
-		fmt.Print("Mot à deviner: ")
+		red.Print("Mot à deviner: ")
 		for i, lettre := range motPartiel {
 			if lettresDevinees[i] {
 				fmt.Print(lettre)
@@ -108,8 +149,22 @@ func main() {
 					fmt.Print("_")
 				}
 			}
+			fmt.Print("\033[H\033[2J")
 			fmt.Print("\n")
-			fmt.Println("Bravo, vous avez trouvé le mot :", word)
+			fmt.Print("\n")
+			fmt.Print("\n")
+			fmt.Print("\n")
+			red.Print("                        -------------------------------------\n")
+			fmt.Println("                       Bravo, vous avez trouvé le mot :", word)
+			red.Print("                        -------------------------------------\n")
+			fmt.Print("\n")
+			fmt.Print("\n")
+			fmt.Print("\n")
+			fmt.Println(string(content))
+			fmt.Print("\n")
+			fmt.Print("\n")
+			fmt.Print("\n")
+			fmt.Print("\n")
 			break
 		}
 
@@ -133,8 +188,22 @@ func main() {
 
 	if attempts == 0 {
 		fmt.Print("\033[H\033[2J") // Effacer l'écran
-		fmt.Println("Vous n'avez plus de tentatives, vous avez perdu !")
-		fmt.Println("Le mot était :", word)
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
+		red.Print("                     -----------------------------------------\n")
+		fmt.Println("                  Vous n'avez plus de tentatives, vous avez perdu !")
+		fmt.Println("                              Le mot était :", word)
+		red.Print("                     -----------------------------------------\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Println(string(tnul))
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Print("\n")
 	}
 }
 

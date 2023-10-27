@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/fatih/color"
 )
@@ -17,6 +18,7 @@ var nombrelignealire = 8
 var positiondedepart = 0
 
 func main() {
+
 	fichier, err := os.Open("GROSNOOB.txt")
 	if err != nil {
 		fmt.Println("Erreur lors de l'ouverture du fichier :", err)
@@ -49,11 +51,14 @@ func main() {
 	red := color.New(color.FgRed)
 
 	// On choisit un mot au hasard dans words.txt
-	data, err := ioutil.ReadFile("words.txt")
+	level := selectDifficulty()
+
+	// Chargez les mots en fonction du niveau de difficulté choisi
+	words, err := loadWordsByDifficulty(level)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Erreur lors du chargement des mots :", err)
+		return
 	}
-	words := strings.Split(string(data), "\n")
 
 	// On sélectionne un mot au hasard
 	rand.Seed(time.Now().UnixNano())
@@ -115,6 +120,9 @@ func main() {
 			log.Fatal(err)
 			return
 		}
+		// Normalisez la lettre entrée par l'utilisateur
+		input = normalizeString(input)
+
 		// Mettez la lettre en minuscule
 		input = strings.ToLower(input)
 
@@ -237,4 +245,91 @@ func hangman(startPosition int) {
 			}
 		}
 	}
+}
+
+func selectDifficulty() string {
+	red := color.New(color.FgRed)
+	yellow := color.New(color.FgYellow)
+	green := color.New(color.FgHiGreen)
+	var level string
+	fmt.Print("\033[H\033[2J") // Effacer l'écran
+	fmt.Print("\n")
+	fmt.Print("\n")
+	red.Print(" ----------------------------------\n")
+	fmt.Println("  Bienvenue dans le jeu du pendu !")
+	red.Print(" ----------------------------------\n")
+	fmt.Print("\n")
+	fmt.Print("\n")
+	fmt.Print("Sélectionnez un ")
+	red.Print("niveau ")
+	fmt.Println("de difficulté :")
+	fmt.Print("\n")
+	fmt.Print("\n")
+	fmt.Print("\n")
+	green.Println("                    1. Facile")
+	fmt.Print("\n")
+	fmt.Print("\n")
+	yellow.Println("                    2. Moyen")
+	fmt.Print("\n")
+	fmt.Print("\n")
+	red.Println("                    3. Difficile")
+	fmt.Print("\n")
+
+	for {
+		fmt.Print("\n")
+		fmt.Print("\n")
+		fmt.Print("Entrez le ")
+		red.Print("numéro ")
+		fmt.Print("du niveau de difficulté : ")
+		fmt.Print("\n")
+
+		_, err := fmt.Scan(&level)
+		if err != nil {
+			log.Fatal(err)
+			return ""
+		}
+
+		switch level {
+		case "1":
+			return "facile"
+		case "2":
+			return "moyen"
+		case "3":
+			return "difficile"
+		default:
+			fmt.Println("Niveau invalide. Veuillez réessayer.")
+		}
+	}
+}
+func loadWordsByDifficulty(level string) ([]string, error) {
+	filePath := ""
+	switch level {
+	case "facile":
+		filePath = "mots_faciles.txt"
+	case "moyen":
+		filePath = "mots_moyens.txt"
+	case "difficile":
+		filePath = "mots_difficiles.txt"
+	default:
+		return nil, fmt.Errorf("Niveau de difficulté non reconnu")
+	}
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	words := strings.Split(string(data), "\n")
+	return words, nil
+}
+func normalizeString(input string) string {
+	var result strings.Builder
+
+	for _, r := range input {
+		if unicode.Is(unicode.Mn, r) {
+			continue
+		}
+		result.WriteRune(r)
+	}
+
+	return result.String()
 }
